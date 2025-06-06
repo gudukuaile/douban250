@@ -462,4 +462,4 @@ if __name__ == '__main__':
         if df_movies.empty:
             print("Failed to load data. Dashboard may not work correctly.")
             # Optionally, app.layout could be updated here to show a permanent error message.
-    app.run_server(debug=True)
+    app.run(debug=True)
