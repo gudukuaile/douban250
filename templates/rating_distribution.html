@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribution of Movie Ratings</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .back-link {
+            display: block;
+            margin: 10px 0 20px 10%; /* Align with chart roughly */
+            font-size: 1em;
+            color: #337ab7;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link">&laquo; Back to Home</a>
+    <div style="width: 80%; margin: auto;">
+        <canvas id="ratingDistributionChart"></canvas>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const response = await fetch('/data/rating_distribution');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: "Invalid JSON response from server" }));
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        }
+
+        async function createChart() {
+            const errorMessageDiv = document.getElementById('errorMessage');
+            try {
+                const data = await fetchData();
+                if (data.error) {
+                    console.error('Backend error:', data.error);
+                    errorMessageDiv.textContent = `Error loading chart data: ${data.error}`;
+                    return;
+                }
+
+                const ctx = document.getElementById('ratingDistributionChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.rating_brackets,
+                        datasets: [{
+                            label: 'Number of Movies',
+                            data: data.counts,
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Movies'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Rating Bracket'
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Distribution of Movie Ratings'
+                            },
+                            legend: {
+                                display: false // Usually not needed for a single dataset histogram
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Fetch error:', error);
+                errorMessageDiv.textContent = `Could not load chart data: ${error.message}. Please try again later.`;
+            }
+        }
+
+        createChart();
+    </script>
+</body>
+</html>
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.rating_brackets,
+                    datasets: [{
+                        label: 'Number of Movies',
+                        data: data.counts,
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Movies'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Rating Bracket'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribution of Movie Ratings'
+                        },
+                        legend: {
+                            display: false // Usually not needed for a single dataset histogram
+                        }
+                    }
+                }
+            });
+        }
+
+        createChart();
+    </script>
+</body>
+</html>

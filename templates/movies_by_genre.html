@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies by Genre</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .back-link {
+            display: block;
+            margin: 10px 0 20px 10%; /* Align with chart roughly */
+            font-size: 1em;
+            color: #337ab7;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link">&laquo; Back to Home</a>
+    <div style="width: 80%; height: 600px; margin: auto;">
+        <canvas id="moviesByGenreChart"></canvas>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const response = await fetch('/data/movies_by_genre');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: "Invalid JSON response from server" }));
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        }
+
+        async function createChart() {
+            const errorMessageDiv = document.getElementById('errorMessage');
+            try {
+                const data = await fetchData();
+                if (data.error) {
+                    console.error('Backend error:', data.error);
+                    errorMessageDiv.textContent = `Error loading chart data: ${data.error}`;
+                    return;
+                }
+
+                const ctx = document.getElementById('moviesByGenreChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar', // For horizontal bar, type is 'bar' and indexAxis is 'y'
+                    data: {
+                        labels: data.genres,
+                        datasets: [{
+                            label: 'Number of Movies',
+                            data: data.counts,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y', // This makes the bar chart horizontal
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { // X-axis now represents counts
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Movies'
+                                }
+                            },
+                            y: { // Y-axis now represents genres
+                                title: {
+                                    display: true,
+                                    text: 'Genre'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false // Often good to hide legend for single dataset bar charts
+                            },
+                            title: {
+                                display: true,
+                                text: 'Movie Counts by Genre'
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Fetch error:', error);
+                errorMessageDiv.textContent = `Could not load chart data: ${error.message}. Please try again later.`;
+            }
+        }
+
+        createChart();
+    </script>
+</body>
+</html>
+            new Chart(ctx, {
+                type: 'bar', // For horizontal bar, type is 'bar' and indexAxis is 'y'
+                data: {
+                    labels: data.genres,
+                    datasets: [{
+                        label: 'Number of Movies',
+                        data: data.counts,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // This makes the bar chart horizontal
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { // X-axis now represents counts
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Movies'
+                            }
+                        },
+                        y: { // Y-axis now represents genres
+                            title: {
+                                display: true,
+                                text: 'Genre'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false // Often good to hide legend for single dataset bar charts
+                        },
+                        title: {
+                            display: true,
+                            text: 'Movie Counts by Genre'
+                        }
+                    }
+                }
+            });
+        }
+
+        createChart();
+    </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Average Rating by Year</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .back-link {
+            display: block;
+            margin: 10px 0 20px 10%; /* Align with chart roughly */
+            font-size: 1em;
+            color: #337ab7;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link">&laquo; Back to Home</a>
+    <div style="width: 80%; margin: auto;">
+        <canvas id="avgRatingByYearChart"></canvas>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const response = await fetch('/data/avg_rating_by_year');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: "Invalid JSON response from server" }));
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        }
+
+        async function createChart() {
+            const errorMessageDiv = document.getElementById('errorMessage');
+            try {
+                const data = await fetchData();
+                if (data.error) {
+                    console.error('Backend error:', data.error);
+                    errorMessageDiv.textContent = `Error loading chart data: ${data.error}`;
+                    return;
+                }
+
+                const ctx = document.getElementById('avgRatingByYearChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.years,
+                        datasets: [{
+                            label: 'Average Rating',
+                            data: data.average_ratings,
+                            fill: false,
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: false, // Ratings usually don't start at 0
+                                title: {
+                                    display: true,
+                                    text: 'Average Rating'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Year'
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Average Movie Rating by Year'
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Fetch error:', error);
+                errorMessageDiv.textContent = `Could not load chart data: ${error.message}. Please try again later.`;
+            }
+        }
+
+        createChart();
+    </script>
+</body>
+</html>
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.years,
+                    datasets: [{
+                        label: 'Average Rating',
+                        data: data.average_ratings,
+                        fill: false,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false, // Ratings usually don't start at 0
+                            title: {
+                                display: true,
+                                text: 'Average Rating'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Year'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Average Movie Rating by Year'
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
+        createChart();
+    </script>
+</body>
+</html>
